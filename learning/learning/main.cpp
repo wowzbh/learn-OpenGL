@@ -13,6 +13,7 @@
 	VBO(vertex buffer object): 顶点缓冲对象
 	EOB(element buffer object) 
 	&IBO(index budffer object): 索引缓冲对象
+	polygon: 多边形
 */
 
 //init viewport and viewport size changed with window size change
@@ -125,14 +126,20 @@ int main()
 
 	//set up vertex data and configure vertex attributes
 	float vertices[] = {
-	-0.5f, -0.5f, 0.0f, //left
-	0.5f, -0.5f, 0.0f, //right
-	0.0f, 0.5f, 0.0f //top
+	0.5f, 0.5f, 0.0f,   // right up
+	0.5f, -0.5f, 0.0f,  // right down
+	-0.5f, -0.5f, 0.0f, // left down
+	-0.5f, 0.5f, 0.0f   // left up
 	};
-	//set up VAO & VBO
-	unsigned int VAO, VBO;
+	unsigned int indices[] = {
+	0, 1, 3, // first triangle
+	1, 2, 3  //second triangle
+	};
+	//set up VAO & VBO & EBO
+	unsigned int VAO, VBO, EBO;
 	glGenVertexArrays(1, &VAO);
 	glGenBuffers(1, &VBO);
+	glGenBuffers(1, &EBO);
 	//bind the Vertex Array Object first, then bind and set vertex buffer(s), 
 	//and then configure vertex attributes(s).
 	glBindVertexArray(VAO);
@@ -140,6 +147,9 @@ int main()
 	glBindBuffer(GL_ARRAY_BUFFER, VBO);
 	//copy the vertices to buffer
 	glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
 	//set attributes of vertex
 	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3*sizeof(float), (void*)0);
 	glEnableVertexAttribArray(0);
@@ -158,11 +168,13 @@ int main()
 		//Rendering
 		glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT);
+		//draw use line
+		glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 		//draw triangle
 		glUseProgram(shaderProgram);
 		glBindVertexArray(VAO);
-		glDrawArrays(GL_TRIANGLES, 0, 3);
-
+		//glDrawArrays(GL_TRIANGLES, 0, 3);
+		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 		//Swap color buffer
 		//check events
 		glfwSwapBuffers(window);
