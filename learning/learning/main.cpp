@@ -23,7 +23,7 @@ void processInput(GLFWwindow *window);
 
 
 const unsigned int SCR_WIDTH = 800;
-const unsigned int SCR_HEIGHT = 600;
+const unsigned int SCR_HEIGHT = 800;
 
 //set vertexShader source code
 const char *vertexShaderSource = "#version 330 core \n"
@@ -36,9 +36,10 @@ const char *vertexShaderSource = "#version 330 core \n"
 //set fragmentShader source code 
 const char *fragmentShaderSource = "#version 330 core \n"
 "out vec4 FragColor; \n"
+"uniform vec4 ourColor; \n"
 "void main() \n"
 "{ \n"
-"FragColor = vec4(1.0f, 0.5f, 0.2f, 1.0f); \n"
+"FragColor = ourColor; \n"
 "} \0";
 
 int main()
@@ -126,20 +127,15 @@ int main()
 
 	//set up vertex data and configure vertex attributes
 	float vertices[] = {
-	0.5f, 0.5f, 0.0f,   // right up
-	0.5f, -0.5f, 0.0f,  // right down
-	-0.5f, -0.5f, 0.0f, // left down
-	-0.5f, 0.5f, 0.0f   // left up
+	0.0f, 0.5f, 0.0f,   //up
+	-0.5f, 0.0f, 0.0f,  //left
+	0.5f, 0.0f, 0.0f    //right
 	};
-	unsigned int indices[] = {
-	0, 1, 3, // first triangle
-	1, 2, 3  //second triangle
-	};
+	
 	//set up VAO & VBO & EBO
-	unsigned int VAO, VBO, EBO;
+	unsigned int VAO, VBO;
 	glGenVertexArrays(1, &VAO);
 	glGenBuffers(1, &VBO);
-	glGenBuffers(1, &EBO);
 	//bind the Vertex Array Object first, then bind and set vertex buffer(s), 
 	//and then configure vertex attributes(s).
 	glBindVertexArray(VAO);
@@ -148,8 +144,6 @@ int main()
 	//copy the vertices to buffer
 	glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
 
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
 	//set attributes of vertex
 	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3*sizeof(float), (void*)0);
 	glEnableVertexAttribArray(0);
@@ -169,12 +163,17 @@ int main()
 		glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT);
 		//draw use line
-		glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+		//glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 		//draw triangle
 		glUseProgram(shaderProgram);
+		//update uniform color
+		float timeValue = glfwGetTime();
+		float GreenValue = (sin(timeValue)/2.0f) + 0.5f;
+		int vertexColorLocation = glGetUniformLocation(shaderProgram, "ourColor");
+		glUniform4f(vertexColorLocation, 0.0f, GreenValue, 0.2f, 1.0f);
+		//draw triangle
 		glBindVertexArray(VAO);
-		//glDrawArrays(GL_TRIANGLES, 0, 3);
-		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+		glDrawArrays(GL_TRIANGLES, 0, 3);
 		//Swap color buffer
 		//check events
 		glfwSwapBuffers(window);
