@@ -45,9 +45,9 @@ int main()
 	float vertices[] = {
 	//   顶点					颜色					   纹理
 	 0.5f,  0.5f,  0.0f,	1.0f,  0.0f,  0.0f,		1.0f,   1.0f,  //右上 
-	 0.5f, -0.5f,  0.0f,	0.0f,  1.0f,  0.0f,		1.0f,  -1.0f,  //右下
-	-0.5f, -0.5f,  0.0f,	0.0f,  0.0f,  1.0f,	   -1.0f,  -1.0f,  //左下
-	-0.5f,  0.5f,  0.0f,	1.0f,  1.0f,  0.0f,	   -1.0f,   1.0f   //左上
+	 0.5f, -0.5f,  0.0f,	0.0f,  1.0f,  0.0f,		1.0f,	0.0f,  //右下
+	-0.5f, -0.5f,  0.0f,	0.0f,  0.0f,  1.0f,		0.0f,   0.0f,  //左下
+	-0.5f,  0.5f,  0.0f,	1.0f,  1.0f,  0.0f,	    0.0f,   1.0f   //左上
 	};
 
 	unsigned int indices[] = {
@@ -81,7 +81,7 @@ int main()
 	//loading texture
 
 	//init & bind
-	unsigned int texture1, texture2;
+	unsigned int texture1, texture3;
 	glGenTextures(1, &texture1);
 	glBindTexture(GL_TEXTURE_2D, texture1);
 	//set wrap & min_max filter 环绕和放缩
@@ -91,6 +91,7 @@ int main()
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 	//nrChannels 颜色通道
 	int width, height, nrChannels;    //texture attribute  
+	stbi_set_flip_vertically_on_load(true);
 	unsigned char *data = stbi_load("C:\\users\\wowzbh\\Desktop\\container.jpg", &width, &height, &nrChannels, 0);
 
 	//loading 
@@ -106,8 +107,8 @@ int main()
 	}
 	stbi_image_free(data);
 
-	glGenTextures(1, &texture2);
-	glBindTexture(GL_TEXTURE_2D, texture2);
+	glGenTextures(1, &texture3);
+	glBindTexture(GL_TEXTURE_2D, texture3);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
@@ -116,7 +117,7 @@ int main()
 	data = stbi_load("C:\\users\\wowzbh\\Desktop\\awesomeface.png", &width, &height, &nrChannels, 0);
 	if (data)
 	{
-		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
 		glGenerateMipmap(GL_TEXTURE_2D);
 	}
 	else
@@ -142,7 +143,7 @@ int main()
 		glActiveTexture(GL_TEXTURE0);
 		glBindTexture(GL_TEXTURE_2D, texture1);
 		glActiveTexture(GL_TEXTURE1);
-		glBindTexture(GL_TEXTURE_2D, texture2);
+		glBindTexture(GL_TEXTURE_2D, texture3);
 
 		ourshader.use();
 		glBindVertexArray(VAO);
